@@ -1,8 +1,8 @@
 /// <reference types="vitest" />
 import path from 'node:path'
 import { defineConfig } from 'vite'
-import { createVitePlugins } from './viteConfig/plugins'
 import { buildConfig } from './viteConfig/build'
+import { createVitePlugins } from './viteConfig/plugins'
 
 // https://vitejs.dev/config/
 export default defineConfig(() => {
@@ -19,10 +19,7 @@ export default defineConfig(() => {
       },
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json'],
     },
-    esbuild: {
-      pure: ['console.log'], // 删除 console.log
-    },
     plugins: createVitePlugins(),
-    build: buildConfig()
+    build: buildConfig(),
   }
 })

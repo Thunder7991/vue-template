@@ -10,7 +10,7 @@ export function buildConfig(): BuildOptions {
     sourcemap: true,
     // 关闭文件计算
     reportCompressedSize: false,
-    rollupOptions: {
+    rolldownOptions: {
       output: {
         // 用于从入口点创建的块的打包输出格式[name]表示文件名,[hash]表示该文件内容hash值
         entryFileNames: 'js/[name].[hash].js',
@@ -18,24 +18,37 @@ export function buildConfig(): BuildOptions {
         chunkFileNames: 'js/[name].[hash].js',
         // 用于输出静态资源的命名，[ext]表示文件扩展名
         assetFileNames: (assetInfo: any) => {
-          const info = assetInfo.name.split('.')
+          const name = assetInfo.names?.[0] ?? assetInfo.name ?? ''
+          const info = name.split('.')
           let extType = info.at(-1)
-          // console.log('文件信息', assetInfo.name)
-          if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i.test(assetInfo.name)) {
+          if (/\.(mp4|webm|ogg|mp3|wav|flac|aac)(\?.*)?$/i.test(name)) {
             extType = 'media'
           }
-          else if (/\.(png|jpe?g|gif|svg)(\?.*)?$/.test(assetInfo.name)) {
+          else if (/\.(png|jpe?g|gif|svg)(\?.*)?$/.test(name)) {
             extType = 'img'
           }
-          else if (/\.(woff2?|eot|ttf|otf)(\?.*)?$/i.test(assetInfo.name)) {
+          else if (/\.(woff2?|eot|ttf|otf)(\?.*)?$/i.test(name)) {
             extType = 'fonts'
           }
 
           return `${extType}/[name].[hash].[ext]`
         },
-        manualChunks: {
-          vue: ['vue', 'vue-router'],
-          // 'element-plus': ['element-plus']
+        // 手动代码分割（替代已移除的 manualChunks 对象形式）
+        codeSplitting: {
+          groups: [
+            {
+              name: 'vue',
+              test: /[\\/]node_modules[\\/](vue|vue-router)[\\/]/,
+            },
+          ],
+        },
+        // 删除 console.log
+        minify: {
+          compress: {
+            treeshake: {
+              manualPureFunctions: ['console.log'],
+            },
+          },
         },
       },
     },
